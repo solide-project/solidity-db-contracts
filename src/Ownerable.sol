@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.20;
 
-contract Ownable {
-    address private owner;
+contract Ownerable {
+    address public owner;
 
     event OwnerSet(address indexed oldOwner, address indexed newOwner);
 

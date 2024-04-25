@@ -14,9 +14,11 @@ contract SolidityDatabaseRegistry is Allowerable {
 
     constructor() Allowerable() {}
 
-    function find(
-        string memory hash
-    ) public view returns (ContractInfo memory) {
+    function find(string memory hash)
+        public
+        view
+        returns (ContractInfo memory)
+    {
         return bytecodeDB[hash];
     }
 
@@ -39,10 +41,7 @@ contract SolidityDatabaseRegistry is Allowerable {
     /**
      * @dev allows the service to add data multi
      */
-    function adds(
-        string[] memory hashes,
-        string memory cid
-    ) public onlyAllowed {
+    function adds(string[] memory hashes, string memory cid) public onlyAllowed {
         for (uint256 i = 0; i < hashes.length; i++) {
             add(hashes[i], cid);
         }
@@ -51,10 +50,10 @@ contract SolidityDatabaseRegistry is Allowerable {
     /**
      * @dev Note: This should never to called unless something happens
      */
-    function addOverride(
-        string memory hash,
-        string memory cid
-    ) public onlyOwner {
+    function addOverride(string memory hash, string memory cid)
+        public
+        onlyOwner
+    {
         ContractInfo memory newContract;
         newContract.id = cid;
         newContract.timestamp = block.number;

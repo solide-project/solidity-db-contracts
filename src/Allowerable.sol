@@ -2,27 +2,36 @@
 
 pragma solidity 0.8.20;
 
-contract Ownerable {
-    address public owner;
+import "./Ownerable.sol";
 
-    event OwnerSet(address indexed oldOwner, address indexed newOwner);
+contract Allowerable is Ownerable {
+    mapping(address => bool) private allowed;
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Caller is not owner");
+    event AllowanceChanged(address indexed account, bool allowed);
+
+    modifier onlyAllowed() {
+        require(allowed[msg.sender], "Caller is not allowed");
         _;
     }
 
-    constructor(address _owner) {
-        owner = _owner; // 'msg.sender' is sender of current call, contract deployer for a constructor
-        emit OwnerSet(address(0), owner);
+    constructor() Ownerable(msg.sender) {
+        allowed[msg.sender] = true;
+        emit AllowanceChanged(msg.sender, true);
     }
 
-    function changeOwner(address newOwner) public onlyOwner {
-        emit OwnerSet(owner, newOwner);
-        owner = newOwner;
+    function setAllowance(address account, bool isAllowed) public onlyOwner {
+        require(account != address(0), "Invalid account address");
+        allowed[account] = isAllowed;
+        emit AllowanceChanged(account, isAllowed);
     }
 
-    function getOwner() external view returns (address) {
-        return owner;
+    function isAllowed(address account) public view returns (bool) {
+        return allowed[account];
+    }
+
+    function renounceAllowance(address account) public onlyOwner {
+        require(account != owner, "Invalid account address");
+        allowed[msg.sender] = false;
+        emit AllowanceChanged(msg.sender, false);
     }
 }
