@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.20;
 
-import "./Ownable.sol";
+import "./Allowerable.sol";
 
-contract SolidityDatabaseRegistry is Ownable {
+contract SolidityDatabaseRegistry is Allowerable {
     struct ContractInfo {
         string id;
         uint256 timestamp;
@@ -12,20 +12,18 @@ contract SolidityDatabaseRegistry is Ownable {
 
     mapping(string => ContractInfo) bytecodeDB;
 
-    constructor() Ownable(msg.sender) {}
+    constructor() Allowerable() {}
 
-    function find(string memory hash)
-        public
-        view
-        returns (ContractInfo memory)
-    {
+    function find(
+        string memory hash
+    ) public view returns (ContractInfo memory) {
         return bytecodeDB[hash];
     }
 
     /**
      * @dev allows the service to add data
      */
-    function add(string memory hash, string memory cid) public onlyOwner {
+    function add(string memory hash, string memory cid) public onlyAllowed {
         require(
             bytes(bytecodeDB[hash].id).length == 0,
             "Contract already added"
@@ -41,7 +39,10 @@ contract SolidityDatabaseRegistry is Ownable {
     /**
      * @dev allows the service to add data multi
      */
-    function adds(string[] memory hashes, string memory cid) public onlyOwner {
+    function adds(
+        string[] memory hashes,
+        string memory cid
+    ) public onlyAllowed {
         for (uint256 i = 0; i < hashes.length; i++) {
             add(hashes[i], cid);
         }
@@ -50,10 +51,10 @@ contract SolidityDatabaseRegistry is Ownable {
     /**
      * @dev Note: This should never to called unless something happens
      */
-    function addOverride(string memory hash, string memory cid)
-        public
-        onlyOwner
-    {
+    function addOverride(
+        string memory hash,
+        string memory cid
+    ) public onlyOwner {
         ContractInfo memory newContract;
         newContract.id = cid;
         newContract.timestamp = block.number;
